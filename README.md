@@ -8,7 +8,7 @@ Credit goes to the author.
 
 Some changes are made to the original project to include some of the security 
 features.
-1. Two Factor authentication
+1. Two-Factor authentication
 2. Encrypt/Decrypt the messages and store it on database.
 
 
