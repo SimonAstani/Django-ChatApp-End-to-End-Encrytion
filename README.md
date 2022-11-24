@@ -1,9 +1,16 @@
 
-# Django Chat Application
+# Django Chat Application with encryption security features
 
-A chat application built using django rest framework. The 
-user can search other users and add them as a friend and have 
-one to one chat with their friends.
+The project is orignally based on
+https://github.com/Madhur215/Django-ChatApp
+
+Credit goes to the author.
+
+Some changes are made to the original project to include some of the security 
+features.
+1. Two Factor authentication
+2. Encrypt/Decrypt the messages and store it on database.
+
 
 ## Screenshots
 
@@ -12,12 +19,6 @@ one to one chat with their friends.
 ![image](/Images/chat.jpg)
 
 ## Installation
-
-```
-pip install django
-pip install django-rest-framework
-```
-
 ## How to use?
 
 - Clone the repository
