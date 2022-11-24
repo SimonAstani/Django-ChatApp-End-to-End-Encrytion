@@ -1,18 +1,19 @@
 {% extends 'chat/chats.html' %}
 {% load static %}
-
+{% load custom_tags %}
 {% block message %}
 {% for message in messages %}
     {% if curr_user == message.sender_name %}
         <div class="container darker">
-            <img src="{% static 'images/user_image.jpg' %}" alt="Avatar" class="right" style="width:100%;">
-            <p>{{message.description}}</p>
+            <img src="{% static 'images/sender.png'%}" alt="Avatar" class="right" style="width:100%;">
+            <p style="text-align:right;">{{message.description| decrypt_text }}</p>
             <span class="time-right">{{message.time}}</span>
+            <span class="time-right">{{message.sender_name}}|</span>
         </div>
     {% else %}
         <div class="container">
-            <img src="{% static 'images/user_image.jpg' %}" alt="Avatar" style="width:100%;">
-            <p>{{message.description}}</p>
+            <img src="{% static 'images/receiver.png' %}" alt="Avatar" style="width:100%;">
+            <p>{{message.description | decrypt_text}}</p>
             <span class="time-left">{{message.time}}</span>
         </div>
     {% endif %}
@@ -29,8 +30,8 @@ $(function () {
 })
 
 const text = '<div class="container">'
-            + '<img src="{% static 'images/user_image.jpg' %}" alt="Avatar" style="width:100%;">' +
-            '<p>{description}</p>' +
+            + '<img src="{% static 'images/receiver.png' %}" alt="Avatar" style="width:100%;">' +
+            '<p style="text-align:left;">{description}</p>' +
             '<span class="time-left">{time}</span>' +
             '</div>'
 
@@ -41,6 +42,7 @@ function receive(){
                 var field = text.replace('{description}', data[i].description);
                 var time = data[i].time.slice(0, 5) + ' a.m'
                 field = field.replace('{time}', time);
+                console.log(data)
                 $('#board').append(field);
                 scrolltoend();
             }

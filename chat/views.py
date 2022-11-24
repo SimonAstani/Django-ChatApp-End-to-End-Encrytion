@@ -1,3 +1,9 @@
+import base64
+import logging
+import traceback
+
+from cryptography.fernet import Fernet
+from django.conf import settings
 from django.shortcuts import render, HttpResponse, redirect
 from .models import UserProfile, Friends, Messages
 from django.views.decorators.csrf import csrf_exempt
@@ -118,7 +124,11 @@ def chat(request, username):
     friend = UserProfile.objects.get(username=username)
     id = getUserId(request.user.username)
     curr_user = UserProfile.objects.get(id=id)
-    messages = Messages.objects.filter(sender_name=id, receiver_name=friend.id) | Messages.objects.filter(sender_name=friend.id, receiver_name=id)
+    messages = Messages.objects.filter(sender_name=id, receiver_name=friend.id) | Messages.objects.filter(
+        sender_name=friend.id, receiver_name=id)
+
+    for message in messages:
+        print("message", message)
 
     if request.method == "GET":
         friends = getFriendsList(id)
@@ -128,20 +138,66 @@ def chat(request, username):
                        'curr_user': curr_user, 'friend': friend})
 
 
+def chat_new(request):
+    return render(request, 'chat/chat_new.html')
+
+
 @csrf_exempt
 def message_list(request, sender=None, receiver=None):
     if request.method == 'GET':
         messages = Messages.objects.filter(sender_name=sender, receiver_name=receiver, seen=False)
+
         serializer = MessageSerializer(messages, many=True, context={'request': request})
+        data = serializer.data
+        if not data:
+            print(data)
+            print("Empty list")
+        else:
+            data[0]['description'] = decrypt(data[0]['description'])
+
         for message in messages:
             message.seen = True
             message.save()
-        return JsonResponse(serializer.data, safe=False)
+        return JsonResponse(data, safe=False)
 
     elif request.method == "POST":
         data = JSONParser().parse(request)
+        cipher_text = encrypt(data['description'])
+        update_data = {'description': cipher_text}
+        data.update(update_data)
+
         serializer = MessageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
+
+def encrypt(txt):
+    try:
+        # convert integer etc to string first
+        txt = str(txt)
+        # get the key from settings
+        cipher_suite = Fernet(settings.ENCRYPT_KEY)  # key should be byte
+        # #input should be byte, so convert the text to byte
+        encrypted_text = cipher_suite.encrypt(txt.encode('ascii'))
+        # encode to urlsafe base64 format
+        encrypted_text = base64.urlsafe_b64encode(encrypted_text).decode("ascii")
+        return encrypted_text
+    except Exception as e:
+        # log the error if any
+        logging.getLogger("error_logger").error(traceback.format_exc())
+        return None
+
+
+def decrypt(txt):
+    try:
+        # base64 decode
+        txt = base64.urlsafe_b64decode(txt)
+        cipher_suite = Fernet(settings.ENCRYPT_KEY)
+        decoded_text = cipher_suite.decrypt(txt).decode("ascii")
+        return decoded_text
+    except Exception as e:
+        # log the error
+        logging.getLogger("error_logger").error(traceback.format_exc())
+        return None

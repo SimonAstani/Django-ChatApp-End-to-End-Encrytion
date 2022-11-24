@@ -11,3 +11,4 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Messages
         fields = ['sender_name', 'receiver_name', 'description', 'time']
 
+

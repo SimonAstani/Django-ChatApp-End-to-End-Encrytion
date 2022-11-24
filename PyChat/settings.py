@@ -21,11 +21,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'usnm_pu9ng2xf4@q#aens^n4t)_1)b6icnc^1u-f_jko++*=(#'
+ENCRYPT_KEY = b'4jUToTdy6CanBhUJiMhqKpRzeZtyy5B5HTAFgqX2Pwk='
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['54.234.253.122']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +45,9 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'rest_framework',
     'widget_tweaks',
+    'django_otp',
+    'django_otp.plugins.otp_totp'
+
 ]
 
 MIDDLEWARE = [
@@ -52,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_otp.middleware.OTPMiddleware'
 ]
 
 ROOT_URLCONF = 'PyChat.urls'
@@ -78,12 +86,24 @@ WSGI_APPLICATION = 'PyChat.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'chatapp',
+        'USER': 'postgres',
+        'PASSWORD': 'Nepal@123',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
+
 
 
 # Password validation
@@ -101,6 +121,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'registration.validators.CustomPasswordValidator',
     },
 ]
 
@@ -134,4 +160,5 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
+# STATIC_ROOT = '/var/www/mysite/assets/'
 

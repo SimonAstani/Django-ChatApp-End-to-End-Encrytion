@@ -41,6 +41,10 @@
   float: left;
   color: #999;
 }
+.text-right{
+  float: right;
+  color: #999;
+}
 
 .messages{
     height: 500px;

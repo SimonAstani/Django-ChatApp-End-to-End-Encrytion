@@ -4,7 +4,43 @@ from django.contrib.auth.models import User
 from chat.models import UserProfile
 
 
-class SignUpForm(forms.Form):
+class RegisterForm(UserCreationForm):
+    # fields we want to include and customize in our form
+    name = forms.CharField(max_length=100,
+                                 required=True,
+                                 widget=forms.TextInput(attrs={'placeholder': 'Name',
+                                                               'class': 'form-control',
+                                                               }))
+
+    username = forms.CharField(max_length=100,
+                               required=True,
+                               widget=forms.TextInput(attrs={'placeholder': 'Username',
+                                                             'class': 'form-control',
+                                                             }))
+    email = forms.EmailField(required=True,
+                             widget=forms.TextInput(attrs={'placeholder': 'Email',
+                                                           'class': 'form-control',
+                                                           }))
+    password1 = forms.CharField(max_length=50,
+                                required=True,
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Password',
+                                                                  'class': 'form-control',
+                                                                  'data-toggle': 'password',
+                                                                  'id': 'password',
+                                                                  }))
+    password2 = forms.CharField(max_length=50,
+                                required=True,
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password',
+                                                                  'class': 'form-control',
+                                                                  'data-toggle': 'password',
+                                                                  'id': 'password',
+                                                                  }))
+
+    class Meta:
+        model = User
+        fields = ['name', 'username', 'email', 'password1', 'password2']
+
+class SignUpForm(UserCreationForm):
 
     username = forms.CharField(min_length=5, max_length=20)
     name = forms.CharField(max_length=25, label="Name")
@@ -27,6 +63,7 @@ class SignUpForm(forms.Form):
         elif password2 != password1:
             return None
         return password1
+
 
     def validate_email(self):
         email = self.cleaned_data['email']

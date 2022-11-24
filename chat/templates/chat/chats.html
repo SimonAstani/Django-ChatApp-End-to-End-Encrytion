@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block  content %}
-
         <div style="margin-top: 12px">
             <h3>{{friend.name}}</h3>
         </div>
@@ -36,8 +35,8 @@
          }
 
         const text_box = '<div class="container darker">' +
-            '<img src="{% static 'images/user_image.jpg' %}" alt="Avatar" class="right" style="width:100%;">' +
-            '<p>{description}</p>' +
+            '<img src="{% static 'images/sender.png' %}" alt="Avatar" class="right" style="width:100%;">' +
+            '<p class = "text-right">{description}</p>' +
             '<span class="time-right">{time}</span>' +
             '</div>'
 
@@ -59,6 +58,7 @@
                 var today = new Date();
                 var time = today.getHours() + ":" + today.getMinutes()
                 field = field.replace('{time}', time)
+                console.log(data)
                 $('#board').append(field);
                 scrolltoend();
             })
